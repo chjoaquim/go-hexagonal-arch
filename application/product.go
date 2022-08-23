@@ -10,35 +10,44 @@ func init() {
 	govalidator.SetFieldsRequiredByDefault(true)
 }
 
-type ProductInterface interface {
-	IsValid() (bool, error)
-	Enable() error
-	Disable() error
-	GetID() string
-	GetName() string
-	GetStatus() string
-	GetPrice() float64
-}
+type (
+	ProductInterface interface {
+		IsValid() (bool, error)
+		Enable() error
+		Disable() error
+		GetID() string
+		GetName() string
+		GetStatus() string
+		GetPrice() float64
+	}
 
-type ProductServiceInterface interface {
-	Get(id string) (ProductInterface, error)
-	Create(name string, price float64) (ProductInterface, error)
-	Enable(productInterface ProductInterface) (ProductInterface, error)
-	Disable(productInterface ProductInterface) (ProductInterface, error)
-}
+	ProductServiceInterface interface {
+		Get(id string) (ProductInterface, error)
+		Create(name string, price float64) (ProductInterface, error)
+		Enable(productInterface ProductInterface) (ProductInterface, error)
+		Disable(productInterface ProductInterface) (ProductInterface, error)
+	}
 
-type ProductReader interface {
-	Get(id string) (ProductInterface, error)
-}
+	ProductReader interface {
+		Get(id string) (ProductInterface, error)
+	}
 
-type ProductWriter interface {
-	Save(product ProductInterface) (ProductInterface, error)
-}
+	ProductWriter interface {
+		Save(product ProductInterface) (ProductInterface, error)
+	}
 
-type ProductPersistenceInterface interface {
-	ProductReader
-	ProductWriter
-}
+	ProductPersistenceInterface interface {
+		ProductReader
+		ProductWriter
+	}
+
+	Product struct {
+		ID     string  `valid:"uuidv4"`
+		Name   string  `valid:"required"`
+		Status string  `valid:"required"`
+		Price  float64 `valid:"float,optional"`
+	}
+)
 
 const (
 	ENABLED  = "enabled"
@@ -52,13 +61,6 @@ func NewProduct() *Product {
 	}
 
 	return &product
-}
-
-type Product struct {
-	ID     string  `valid:"uuidv4"`
-	Name   string  `valid:"required"`
-	Status string  `valid:"required"`
-	Price  float64 `valid:"float,optional"`
 }
 
 func (p *Product) IsValid() (bool, error) {
